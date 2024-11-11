@@ -90,7 +90,7 @@ const userFailedSchema = new mongoose.Schema({
 const User = mongoose.model('user',userSchema);
 const UserFailed = mongoose.model('user_failed',userFailedSchema);
 
-
+console.log("starting server")
 
 const verifyPassword = async (password, hashedPassword) => {
     const match = await bcrypt.compare(password, hashedPassword);
