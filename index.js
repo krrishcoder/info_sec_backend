@@ -4,17 +4,32 @@ const cookieParser = require('cookie-parser');
 const cors = require("cors")
 const mongoose = require('mongoose');
 const app = express()
-const PORT = process.env.POST || 5000;
+const PORT = process.env.PORT || 5000;
 const bcrypt = require('bcrypt');
 const moment = require('moment');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 
 
-// cross origin resources allowed
+// // cross origin resources allowed
+// app.use(cors({
+//     origin: 'http://localhost:3001', // Allow only this origin
+//     credentials: true                // Allow credentials if needed (e.g., cookies)
+// }));
+
+const allowedOrigins = ['http://localhost:3001', 'https://info-sec-frontend-1.onrender.com'];
+
 app.use(cors({
-    origin: 'http://localhost:3001', // Allow only this origin
-    credentials: true                // Allow credentials if needed (e.g., cookies)
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'username']
 }));
 
 
