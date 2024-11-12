@@ -33,6 +33,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'username']
 }));
 
+
 const SECRET_KEY ="The unexamined life is not worth living@"
 
 
@@ -286,14 +287,6 @@ app.post('/login',async (req,res)=>{
           return res.status(401).json({ message: 'Invalid username or password' });
         }
 
-        const token = jwt.sign(username, SECRET_KEY, { expiresIn: '1h' });
-
-        res.cookie('authToken', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Only secure in production
-            sameSite: 'strict',
-            maxAge: 3600000 // 1 hour
-        });
     
         console.log(`login sucess of ${username}`)
         return  res.status(200).json({ message: 'Login successful' });
