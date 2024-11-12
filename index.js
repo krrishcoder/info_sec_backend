@@ -4,11 +4,12 @@ const cookieParser = require('cookie-parser');
 const cors = require("cors")
 const mongoose = require('mongoose');
 const app = express()
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.POST || 5000;
 const bcrypt = require('bcrypt');
 const moment = require('moment');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
+const jwt = require('jsonwebtoken');
 
 
 // // cross origin resources allowed
@@ -32,6 +33,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'username']
 }));
 
+const SECRET_KEY ="The unexamined life is not worth living@"
 
 
 // max -failed attempts
@@ -105,7 +107,7 @@ const userFailedSchema = new mongoose.Schema({
 const User = mongoose.model('user',userSchema);
 const UserFailed = mongoose.model('user_failed',userFailedSchema);
 
-console.log("starting server")
+console.log("starting server...")
 
 const verifyPassword = async (password, hashedPassword) => {
     const match = await bcrypt.compare(password, hashedPassword);
@@ -283,6 +285,15 @@ app.post('/login',async (req,res)=>{
 
           return res.status(401).json({ message: 'Invalid username or password' });
         }
+
+        const token = jwt.sign(username, SECRET_KEY, { expiresIn: '1h' });
+
+        res.cookie('authToken', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Only secure in production
+            sameSite: 'strict',
+            maxAge: 3600000 // 1 hour
+        });
     
         console.log(`login sucess of ${username}`)
         return  res.status(200).json({ message: 'Login successful' });
